@@ -2,7 +2,7 @@
 
 ## Disclaimer
 This is an early Version of the HSPR Software. The Code base is work in progress and a refactoring of the code is coming soon.
-All computations are based on the User Guide of November 16, 2021 (Draft Recommended Practice: SVP-2021-32).
+All computations are based on Headlight Safety Performance Rating (HSPR) - Recommended Practice - CE-5815.
 
 
 ## Installation
