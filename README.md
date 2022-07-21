@@ -15,7 +15,7 @@ All computations are based on Headlight Safety Performance Rating (HSPR) - Recom
     ```
 - Please use the provided zip file or clone the code using the folowing command in your command line:
     ```bash
-        git clone https://gitfront.io/r/DH-HSPR/03818b65a1d55d758838e22dc0d830e7915e6414/HSPR.git
+        git clone https://github.com/HSPR-Software/HSPR.git
     ```
     - To use the git clone command under windows pleas install the latest [git software](https://git-scm.com/downloads)
 - To install the required python packages please run the following command from the main direcotry of the project (conda enviroment needs to be activated)
