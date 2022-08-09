@@ -1,0 +1,7 @@
+*.pyc
+env
+venv
+dist
+build
+installer
+*.spec
