@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mc
 import matplotlib.patches as patches
 
-from gui import Ui_MainWindow 
 
 from func.effective_performance import *
 from assessments.lb_assessment import *

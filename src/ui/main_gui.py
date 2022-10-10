@@ -1,8 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        self.setWindowIcon(QtGui.QIcon("src\\taskbar_icon.png"))
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1097, 891)
         MainWindow.setStyleSheet("#QWidget#centralwidget {background-color:qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0.011, stop:0 rgba(0, 116, 183, 255), stop:1 rgba(255, 255, 255, 255))}")
@@ -78,6 +80,16 @@ class Ui_MainWindow(object):
                                         "}")
         self.clear_loadeddata_btn.setObjectName("clear_loadeddata_btn")
         self.verticalLayout.addWidget(self.clear_loadeddata_btn)
+
+        self.adb_quickcheck_btn = QtWidgets.QPushButton(self.centralwidget)
+        self.adb_quickcheck_btn.setSizePolicy(btn_policy)
+        self.adb_quickcheck_btn.setStyleSheet("\n"
+                                        "QPushButton:pressed {\n"
+                                        "   background-color:#60a3d9;\n"
+                                        "    border-style: inset;\n"
+                                        "}")
+        self.adb_quickcheck_btn.setObjectName("adb_quickcheck_btn")
+        self.verticalLayout.addWidget(self.adb_quickcheck_btn)
 
         self.label_upload = QtWidgets.QLabel(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
@@ -436,6 +448,7 @@ class Ui_MainWindow(object):
         self.upload_hb_btn.setText(_translate("MainWindow", "Upload HB files"))
         self.upload_adb_btn.setText(_translate("MainWindow", "Upload ADB files"))
         self.clear_loadeddata_btn.setText(_translate("MainWindow", "Clear loaded data"))
+        self.adb_quickcheck_btn.setText(_translate("MainWindow", "Start ADB Block-Out Zone Check"))
         
         #self.how_button.setText(_translate("MainWindow", "How to use"))
         #self.about_button.setText(_translate("MainWindow", "About"))
