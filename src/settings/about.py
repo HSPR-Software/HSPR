@@ -1,5 +1,5 @@
 
-version = "2.0"
+version = "2.1"
 
 info = '''
 Software Version '''+ str(version)+''' \n

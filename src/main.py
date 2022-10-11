@@ -1,5 +1,7 @@
 import warnings
 
+
+
 warnings.filterwarnings('ignore')
 
 import os
@@ -34,8 +36,10 @@ from classes.LoadingCircle import *
 from classes.Worker import *
 from classes.Canvas import *
 from classes.PandasModel import *
-from gui import Ui_MainWindow
-from IES_upload_gui import *
+from ui.main_gui import Ui_MainWindow
+from ui.IES_upload_gui import *
+from ui.adb_zonecheck_gui import*
+from func.adb_blockout_zone_check import adb_blockout_zone_check
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -66,12 +70,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.adb_upload_window.ok_btn.clicked.connect(lambda: self.getdatafromUI("ADB",self.adb_upload_window))
         self.adb_upload_window.hide()
 
+        self.adb_check_ui = Ui_zone_check()
+
         # connect buttons
         self.upload_button.clicked.connect(lambda: self.upload_data("ZIP"))
         self.upload_lb_btn.clicked.connect(lambda: self.upload_data("LB"))
         self.upload_hb_btn.clicked.connect(lambda: self.upload_data("HB"))
         self.upload_adb_btn.clicked.connect(lambda: self.upload_data("ADB"))
         self.clear_loadeddata_btn.clicked.connect(lambda: self.clear_uploadeddata())
+        self.adb_quickcheck_btn.clicked.connect(lambda: self.adb_zone_check())
         self.compute_button.clicked.connect(self.compute_assessment)
         self.export_button.clicked.connect(self.export_results)
 
@@ -238,7 +245,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.show_end_popup()
         
-        
+    def adb_zone_check(self):
+        """Evaluates if Block-Out Zone is correct. """
+        if "ADB" in data.keys() and len(data["ADB"][0]) == 12:
+            adb_data = data["ADB"] #for example [0] is shape (12, 301, 901) so the 12 lines with data. [1]=horizontal and [2] is vertical
+            #maxintensities_left_old = [1850,4250,625,5300,7000,1750,16000,5450]
+            maxintensities_left = [2475,4250,975,5300,8750,1750,16000,5450]
+            #maxintensities_right_old = [1850,2500,625,5300,7000,1750,16000,5450]
+            maxintensities_right = [2475,4250,975,5300,8750,1750,16000,5450]
+            measured_intensity_left,measured_intensity_right = adb_blockout_zone_check(adb_data[0],adb_data[1],adb_data[2], read_parameters([],[self.width_adb.text()],[])[1][0])
+            self.adb_check_ui.fill_table_colorcoded(maxintensities_left,maxintensities_right,measured_intensity_left,measured_intensity_right)
+            self.adb_check_ui.show()
+        else: self.show_error_popup("Value Error", "Please upload all 12 ADB files before starting the evaluation.")
+
+
     def compute_assessment(self): 
         # run loading circle gif   
         self.loading_screen.show()     
@@ -272,7 +292,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.worker_eval.signals.result.connect(self.show_table)              
                 
                 # Execute
-                self.threadpool.start(self.worker_eval)               
+                self.threadpool.start(self.worker_eval) 
 
 
         except Exception as e:
@@ -370,6 +390,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.lb_upload_window.close()
             self.hb_upload_window.close() 
             self.adb_upload_window.close() 
+            self.adb_check_ui.close() 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

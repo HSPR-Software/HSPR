@@ -35,10 +35,6 @@ def read_parameters(height_list, width_list, computation_mode):
         else:
             width_list[index] = standard_width 
 
-    print(
-        '\n Low Beam: Height = ', height_list[0], ' Width = ', width_list[0], '\n'
-        ' High Beam: Height = ', height_list[1], ' Width = ', width_list[1], '\n'
-        ' ADB: Height = ', [height_list[2] if 'ADB' in computation_mode else '-'][0], ' Width = ', [width_list[2] if 'ADB' in computation_mode else '-'][0]
-        )   
+
 
     return height_list, width_list
