@@ -5,3 +5,4 @@ dist
 build
 installer
 *.spec
+__pycache__
