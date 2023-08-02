@@ -6,16 +6,16 @@ import matplotlib.colors as mc
 import matplotlib.patches as patches
 # plt.switch_backend('agg')
 
-from func.weighted_sum import *
-from func.evaluate_zone import *
-from func.draw_contourlines import *
-from func.compute_adb_glare import *
-from func.project_on_surface import *
-from func.combine_projection import *
-from func.total_luminous_flux import *
-from func.get_index_positions import *
-from func.merge_light_distributions import *
-from assessments.adb_normalized_points import *
+from ..func.weighted_sum import *
+from ..func.evaluate_zone import *
+# from ..func.draw_contourlines import *
+from ..func.compute_adb_glare import *
+from ..func.project_on_surface import *
+from ..func.combine_projection import *
+from ..func.total_luminous_flux import *
+from ..func.get_index_positions import *
+from ..func.merge_light_distributions import *
+from .adb_normalized_points import *
 
 
 lines = {'50':['Linie1', 'Linie4'],
@@ -64,10 +64,10 @@ def adb_assessment(data, line_names, predifined_height, predifined_width):
                                 data_names, headlamp_adjustment, installation_height, one_point[assessment_mode][0], two_point[assessment_mode][0], [1.5, 3], 1.5)
 
         actual_B_oncoming, point_B_oncoming = evaluate_zone(matrix[get_index_position(line_names, lines[assessment_mode][0])], horizontal_angles, vertical_angles, 
-                    data_names, headlamp_adjustment, installation_height, one_point[assessment_mode][1], two_point[assessment_mode][1], [0, 1.5, 3], 1.5, theta=5)
+                                data_names, headlamp_adjustment, installation_height, one_point[assessment_mode][1], two_point[assessment_mode][1], [0, 1.5, 3], 1.5, theta=5)
 
         actual_C_oncoming, point_C_oncoming = evaluate_zone(matrix[get_index_position(line_names, lines[assessment_mode][0])], horizontal_angles, vertical_angles, 
-                              data_names, headlamp_adjustment, installation_height, one_point[assessment_mode][2], two_point[assessment_mode][2], [-4.5, -6], 1.5)
+                                data_names, headlamp_adjustment, installation_height, one_point[assessment_mode][2], two_point[assessment_mode][2], [-4.5, -6], 1.5)
 
         # merge both headlamps and calculate total luminous flux
         LVK_oncoming, new_horizontal_angles = merge_light_distributions(matrix[get_index_position(line_names, lines[assessment_mode][0])], vertical_angles, horizontal_angles, 
@@ -78,17 +78,16 @@ def adb_assessment(data, line_names, predifined_height, predifined_width):
         
         
         # plot the contour the oncoming ADB 1.5m above road surface
-        left_headlamp, right_headlamp = matrix[get_index_position(line_names, lines[assessment_mode][0])]
+        # left_headlamp, right_headlamp = matrix[get_index_position(line_names, lines[assessment_mode][0])] # not used 
 
-        Ev_left, Eh_left, Eq_left, E_levels, distance_vertical_left = project_on_surface(left_headlamp, horizontal_angles, vertical_angles, assessment_mode='ADB', 
-                                                                                                                          installation_height=installation_height)
+        # Ev_left, Eh_left, Eq_left, E_levels, distance_vertical_left = project_on_surface(left_headlamp, horizontal_angles, vertical_angles, assessment_mode='ADB', installation_height=installation_height) # not used 
 
-        Ev_right, Eh_right, Eq_right, _, distance_vertical_right = project_on_surface(right_headlamp, horizontal_angles, vertical_angles, assessment_mode='ADB', 
-                                                                                                                        installation_height=installation_height)
-
-        Eq_oncoming, Eh_oncoming, Ev_oncoming = combine_projection(Eq_left, Eq_right, distance_vertical_left, predifined_width)
-        cs, contour_figure_line2, axes_intervals_oncoming = draw_contourlines(Ev_oncoming, Eh_oncoming, Eq_oncoming, E_levels)   
-        figure_data_oncoming = [Eq_oncoming, Eh_oncoming, Ev_oncoming]
+        # Ev_right, Eh_right, Eq_right, _, distance_vertical_right = project_on_surface(right_headlamp, horizontal_angles, vertical_angles, assessment_mode='ADB', installation_height=installation_height) # not used 
+        
+        # not used
+        # Eq_oncoming, Eh_oncoming, Ev_oncoming = combine_projection(Eq_left, Eq_right, distance_vertical_left, predifined_width)
+        # cs, contour_figure_line2, axes_intervals_oncoming = draw_contourlines(Ev_oncoming, Eh_oncoming, Eq_oncoming, E_levels)
+        # figure_data_oncoming = [Eq_oncoming, Eh_oncoming, Ev_oncoming]
 
         if assessment_mode == '50':
 
@@ -126,20 +125,20 @@ def adb_assessment(data, line_names, predifined_height, predifined_width):
         actual_Flux_preceding, point_Flux_preceding = compute_total_luminous_flux(LVK_preceding, new_horizontal_angles, vertical_angles, [-45, 45], [-5, 10], 
                                                                                             one_point[assessment_mode][7], two_point[assessment_mode][7]) 
         # calculate flux mean
-        actual_Flux = np.around(np.mean([actual_Flux_oncoming, actual_Flux_preceding]), decimals=0)
+        # not used
+        # actual_Flux = np.around(np.mean([actual_Flux_oncoming, actual_Flux_preceding]), decimals=0)
+        actual_Flux = "err"
 
         # plot the contour the preceding ADB 1.5m above road surface
-        left_headlamp, right_headlamp = matrix[get_index_position(line_names, lines[assessment_mode][-1])]
+        # left_headlamp, right_headlamp = matrix[get_index_position(line_names, lines[assessment_mode][-1])] # not used
 
-        Ev_left, Eh_left, Eq_left, E_levels, distance_vertical_left = project_on_surface(left_headlamp, horizontal_angles, vertical_angles, assessment_mode='ADB',                                                                                         
-                                                                                                                          installation_height=installation_height)
+        # Ev_left, Eh_left, Eq_left, E_levels, distance_vertical_left = project_on_surface(left_headlamp, horizontal_angles, vertical_angles, assessment_mode='ADB', installation_height=installation_height) # not used 
 
-        Ev_right, Eh_right, Eq_right, _, distance_vertical_right = project_on_surface(right_headlamp, horizontal_angles, vertical_angles, assessment_mode='ADB', 
-                                                                                                                        installation_height=installation_height)
+        # Ev_right, Eh_right, Eq_right, _, distance_vertical_right = project_on_surface(right_headlamp, horizontal_angles, vertical_angles, assessment_mode='ADB', installation_height=installation_height) # not used 
 
-        Eq_preceding, Eh_preceding, Ev_preceding = combine_projection(Eq_left, Eq_right, distance_vertical_left, predifined_width)
-        cs, contour_figure_line5, axes_intervals_preceding = draw_contourlines(Ev_preceding, Eh_preceding, Eq_preceding, E_levels)
-        figure_data_preceding = [Eq_preceding, Eh_preceding, Ev_preceding]       
+        # Eq_preceding, Eh_preceding, Ev_preceding = combine_projection(Eq_left, Eq_right, distance_vertical_left, predifined_width) # not used 
+        # cs, contour_figure_line5, axes_intervals_preceding = draw_contourlines(Ev_preceding, Eh_preceding, Eq_preceding, E_levels) # not used 
+        # figure_data_preceding = [Eq_preceding, Eh_preceding, Ev_preceding] # not used 
         
 
         if assessment_mode == '50':
@@ -153,11 +152,15 @@ def adb_assessment(data, line_names, predifined_height, predifined_width):
             
             actual_Glare_preceding, point_Glare_preceding = weighted_sum(glare_points, one_point=0.35, two_point=0.16)
 
-        # Output variables                                                      
+        # Output variables     
+        # not used                                                 
         front_view_figdata_oncoming = [LVK_oncoming, new_horizontal_angles, vertical_angles]
-        top_view_figdata_oncoming = [figure_data_oncoming[0], figure_data_oncoming[1], figure_data_oncoming[2], E_levels, axes_intervals_oncoming]
+        # top_view_figdata_oncoming = [figure_data_oncoming[0], figure_data_oncoming[1], figure_data_oncoming[2], E_levels, axes_intervals_oncoming]
+        top_view_figdata_oncoming = []
         front_view_figdata_preceding = [LVK_preceding, new_horizontal_angles, vertical_angles]
-        top_view_figdata_preceding = [figure_data_preceding[0], figure_data_preceding[1], figure_data_preceding[2], E_levels, axes_intervals_preceding]
+        # not used
+        # top_view_figdata_preceding = [figure_data_preceding[0], figure_data_preceding[1], figure_data_preceding[2], E_levels, axes_intervals_preceding]
+        top_view_figdata_preceding = []
         actual_results = [[actual_A_oncoming, actual_B_oncoming, actual_C_oncoming, actual_Glare_oncoming, actual_Flux_oncoming, actual_A_preceding, actual_B_preceding, actual_C_preceding, actual_Glare_preceding, actual_Flux_preceding],
                             [point_A_oncoming, point_B_oncoming, point_C_oncoming, point_Glare_oncoming, point_Flux_oncoming, point_A_preceding, point_B_preceding, point_C_preceding, point_Glare_preceding, point_Flux_preceding]]
         result_points = adb_normalized_points(point_A_preceding, point_B_preceding, point_C_preceding, point_Flux_preceding, point_Glare_preceding, point_A_oncoming, point_B_oncoming, point_C_oncoming, point_Flux_oncoming, point_Glare_oncoming)   

@@ -1,5 +1,5 @@
 import numpy as np
-from func.merge_light_distributions import *
+from .merge_light_distributions import *
 #from skimage import io
 from matplotlib import pyplot as plt
 from scipy.interpolate import interp2d, RectBivariateSpline

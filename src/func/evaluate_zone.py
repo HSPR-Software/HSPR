@@ -1,7 +1,7 @@
 import numpy as np
 
-from func.find_nearest import *
-from func.compute_points import *
+from .find_nearest import *
+from .compute_points import *
 
 def evaluate_zone(matrix, horizontal_angles, vertical_angles, data_names, headlamp_adjustment, 
      installation_height, one_point, two_point, DirX, DirY, DirZ=400, lux=[1, 3, 5], theta=0):

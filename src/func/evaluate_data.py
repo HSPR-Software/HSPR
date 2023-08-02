@@ -3,10 +3,10 @@ import matplotlib.colors as mc
 import matplotlib.patches as patches
 
 
-from func.effective_performance import *
-from assessments.lb_assessment import *
-from assessments.hb_assessment import *
-from assessments.adb_assessment import *
+from .effective_performance import *
+from ..assessments.lb_assessment import *
+from ..assessments.hb_assessment import *
+from ..assessments.adb_assessment import *
 
 def evaluate_data(data, predifined_height, predifined_width, assessment_mode): 
     """Manege the evaluation process for the different assessments
@@ -25,6 +25,7 @@ def evaluate_data(data, predifined_height, predifined_width, assessment_mode):
 
     for key in data:
         print('---------{}-----------'.format(key))
+
         if 'LB' in key: 
             results[key] = lb_assessment(data[key], predifined_height[0], predifined_width[0])
             pass
@@ -34,22 +35,23 @@ def evaluate_data(data, predifined_height, predifined_width, assessment_mode):
         elif len(data["ADB"])>0:
             lines = [line.split('_')[0] for line in data['ADB'][3]]
             temp_list = adb_assessment(data[key], lines, predifined_height[2], predifined_width[2])
-            
+
             # add results to dictionary
-            results[''.join([key,'_50'])] = temp_list['50']
-            results[''.join([key,'_100'])] = temp_list['100']
-            results[''.join([key,'_200'])] = temp_list['200']
+            results[f'{key}_50'] = temp_list['50']
+            results[f'{key}_100'] = temp_list['100']
+            results[f'{key}_200'] = temp_list['200']
     
     # Close all graphs produced with matplotlib    
+    # does this do anything?
     plt.close('all')
 
     # split data
     assessment_points=dict()
+
     try:
         for key in results:
             assessment_points[key] = results[key][-1]
             del results[key][-1]
     except Exception as e:
-        pass
-
+        raise e
     return [effective_performance(assessment_points, assessment_mode), predifined_height, predifined_width], results

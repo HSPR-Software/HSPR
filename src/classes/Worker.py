@@ -1,6 +1,6 @@
 import traceback, sys
 from PyQt5.QtCore import *
-from classes.WorkerSignals import *
+from .WorkerSignals import *
 
 class Worker(QRunnable):
     '''

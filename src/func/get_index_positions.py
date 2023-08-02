@@ -11,6 +11,8 @@ def get_index_position(list_of_elems, element):
     """
     index_pos_list = []
     index_pos = 0
+    #TODO change while true loop to check if index_pos >= len(list_of_elems) && ... (dont keep it running in an error)
+    #(there might be a funktion to return all matches in array)
     while True:
         try:
             # Search for item in list from indexPos to the end of list

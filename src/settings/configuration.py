@@ -12,11 +12,11 @@ port = int(os.environ.get("PORT", 5000))
 
 debug = True
 
-contacts = "https://www.linkedin.com"
+contacts = "https://www.linkedin.com" ##???
 
 code = "https://github.com"
 
-fontawesome = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
+fontawesome = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' ###???
 
 username = 'rajanovich' # Plotly account username
 

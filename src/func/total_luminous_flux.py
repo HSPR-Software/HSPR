@@ -2,9 +2,9 @@ import os
 import math
 import numpy as np
 
-from func.find_nearest import *
-from func.compute_points import *
-from settings.configuration import Zones
+from .find_nearest import *
+from .compute_points import *
+from ..settings.configuration import Zones
 from scipy.interpolate import interp2d
 
 def compute_total_luminous_flux(matrix, horizontal_angle, vertical_angle, horizontal_boundry, vertical_boundry, one_point, two_point, distance=25):

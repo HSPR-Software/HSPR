@@ -1,5 +1,5 @@
 import os
-import cv2
+# import cv2
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,16 +7,15 @@ import matplotlib.colors as mc
 import matplotlib.patches as patches
 # plt.switch_backend('agg')
 
-from func.weighted_sum import *
-from func.evaluate_width import *
-from func.evaluate_point import *
-from func.draw_contourlines import *
-from func.project_on_surface import *
-from func.combine_projection import *
-from func.total_luminous_flux import *
-from scipy.interpolate import interp2d
-from func.merge_light_distributions import *
-from assessments.hb_normalized_points import *
+from ..func.weighted_sum import *
+from ..func.evaluate_width import *
+from ..func.evaluate_point import *
+from ..func.draw_contourlines import *
+from ..func.project_on_surface import *
+from ..func.combine_projection import *
+from ..func.total_luminous_flux import *
+from ..func.merge_light_distributions import *
+from .hb_normalized_points import *
 
 
 # 1-point and 2-point used for the high beam assessment
@@ -53,15 +52,15 @@ def hb_assessment(data, predifined_height, predifined_width):
     actual_E, point_E = evaluate_point(matrix, horizontal_angles, vertical_angles, data_names, headlamp_adjustment, installation_height, one_point=one_point[4], two_point=two_point[4], DirX=0, DirY=-2+installation_height)
 
     # calculate the light distribution for 250mm above road surface
-    left_headlamp, right_headlamp = matrix[0], matrix[1]
-    Ev_left, Eh_left, Eq_left, E_levels, distance_vertical_left = project_on_surface(left_headlamp, horizontal_angles, vertical_angles, installation_height=installation_height-0.25)
+    # left_headlamp, right_headlamp = matrix[0], matrix[1]
+    # Ev_left, Eh_left, Eq_left, E_levels, distance_vertical_left = project_on_surface(left_headlamp, horizontal_angles, vertical_angles, installation_height=installation_height-0.25)
 
-    Ev_right, Eh_right, Eq_right, _, distance_vertical_right = project_on_surface(right_headlamp, horizontal_angles, vertical_angles, installation_height=installation_height-0.25)
+    # Ev_right, Eh_right, Eq_right, _, distance_vertical_right = project_on_surface(right_headlamp, horizontal_angles, vertical_angles, installation_height=installation_height-0.25)
 
     # plot contour of the combined projection
-    Eq, Eh, Ev = combine_projection(Eq_left, Eq_right, distance_vertical_left, predifined_width)
-    cs, contour_figure, axes_intervals = draw_contourlines(Ev, Eh, Eq, E_levels) 
-    figure_data = [Eq, Eh, Ev]
+    # Eq, Eh, Ev = combine_projection(Eq_left, Eq_right, distance_vertical_left, predifined_width)
+    # cs, contour_figure, axes_intervals = draw_contourlines(Ev, Eh, Eq, E_levels) 
+    # figure_data = [Eq, Eh, Ev]
 
 
     # calculate E nearside and offside for high beam
@@ -86,7 +85,9 @@ def hb_assessment(data, predifined_height, predifined_width):
 
     # Output variables                                                      
     front_view_figdata = [LVK, merged_horizontal_angles, vertical_angles]
-    top_view_figdata = [figure_data[0], figure_data[1], figure_data[2], E_levels, axes_intervals] 
+    # not used?
+    # top_view_figdata = [figure_data[0], figure_data[1], figure_data[2], E_levels, axes_intervals] 
+    top_view_figdata = []
     actual_results = [[actual_A, actual_B, actual_C, actual_D, actual_E, actual_Eoffside, actual_Enearside, actual_Flux],
                       [point_A, point_B, point_C, point_D, point_E, point_Eoffside, point_Enearside, point_Flux]]
     result_points = hb_normalized_points(point_A, point_B, point_C, point_D, point_E, point_Eoffside, point_Enearside, point_Flux)     

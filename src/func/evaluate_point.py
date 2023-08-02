@@ -1,7 +1,7 @@
 import numpy as np
 
-from func.find_nearest import *
-from func.compute_points import *
+from .find_nearest import *
+from .compute_points import *
 
 def evaluate_point(matrix, horizontal_angles, vertical_angles, data_names, headlamp_adjustment, installation_height, one_point, two_point, DirX, DirY, DirZ=100, lux=3):
     """calculate the light intensity at different positions depending on the defenition of TC-45

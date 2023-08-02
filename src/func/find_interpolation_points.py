@@ -1,4 +1,4 @@
-from func.find_nearest import *
+from .find_nearest import *
 
 def find_interpolation_points(matrix, alpha, beta, horizontal_angles, vertical_angles):
     """Find the four neighboring points with their x and y coordinate values

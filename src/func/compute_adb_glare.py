@@ -1,10 +1,10 @@
 import os
 import math
 import numpy as np
-from func.find_nearest import *
-from func.bilinear_interpolation import *
-from func.find_interpolation_points import *
-from settings.configuration import Zones, Glare_Weights
+from .find_nearest import *
+from .bilinear_interpolation import *
+from .find_interpolation_points import *
+from ..settings.configuration import Zones, Glare_Weights
 
 def compute_adb_glare(matrix, installation_width, installation_height, horizontal_angles, vertical_angles, 
                                     horizontal_edges, vertical_edges=[0.93, 1.62], distance=50, line=None):

@@ -2,9 +2,9 @@ import copy
 import zipfile
 import matplotlib.pyplot as plt
 
-from main import MainWindow 
-from func.read_files import *
-from func.evaluate_data import *
+# from main import MainWindow  ##!!!
+from .read_files import *
+from .evaluate_data import *
 
 def read_zipdir(directory):
     """Unzip the uploaded folder and read the files within
@@ -45,5 +45,6 @@ def read_zipdir(directory):
             error_message = "Folder is not complete. Either LB or HB folder or a file within the folders is missing."
         else:
             error_message = e.args[0]
-        MainWindow.show_error_popup(MainWindow, e, error_message)
+        # MainWindow.show_error_popup(MainWindow, e, error_message)
+        print(e, error_message)
     

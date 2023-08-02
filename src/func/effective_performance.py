@@ -2,7 +2,7 @@ import os
 import math
 import numpy as np
 import pandas as pd
-from func.safety_performance_level import *
+from .safety_performance_level import *
     
 def effective_performance(assessment_points, assessment_mode):
     """compute the overall assessment from TC4-45 of the given .ies data, depending on the reached points        

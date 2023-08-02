@@ -1,5 +1,5 @@
 import numpy as np
-from func.compute_points import *
+from .compute_points import *
 
 def weighted_sum(values, one_point, two_point):
     """Calculate the weighted sum

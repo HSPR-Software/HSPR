@@ -113,13 +113,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def checkbox_changed(self, state):
         pass
 
-    def print_test(self, data):
-        
-        print(asizeof.asizeof(data))
-
-    #left result block in UI
     def show_assessment(self, data):
-        # using only a of data = [a, b] (Assessment Score ScoreClass)
         data = data[0]
         installation_data = [self.mode_list, data[1], data[2]]
         for index, key in enumerate(data[0].keys()):
@@ -135,7 +129,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.show_dataframe(self.assessment_view, assessment_df)
 
     def show_table(self, data):
-        # table rigth in UI (Type Name ActualScore PointScore)
         data = data[1]
         #Create dataframe with result data
         global result_df
@@ -156,7 +149,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # ax_2 = plot_top_view(self.canvas.figure, ax_2, data[1]) 
         #Add title to the figures
         self.canvas.figure.suptitle(''.join(['Front view of the light distribution for', ' (Both Headlamps)']), y=0.9)
-        self.canvas.figure.tight_layout()
+        self.canvas.figure.tight_layout()        
 
         return self.canvas
 
@@ -275,7 +268,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         width_list = [self.width_lb.text(), self.width_hb.text(), self.width_adb.text()]
         height_list = [self.height_lb.text(), self.height_hb.text(), self.height_adb.text()]
         computation_mode = [x.text() for x in [self.checkbox_manually, self.checkbox_automatic, self.checkbox_adb] if x.isChecked()]
-
+        
         try:
             if len(data)<2: raise ValueError("Upload data before computing")
             if len(computation_mode) < 1: raise AssertionError("Please select at least one assessment mode.") 
@@ -296,7 +289,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # Connect signals
                 self.worker_eval.signals.result.connect(self.show_assessment)
                 self.worker_eval.signals.result.connect(self.clean_and_plot)
-                self.worker_eval.signals.result.connect(self.show_table)   
+                self.worker_eval.signals.result.connect(self.show_table)              
                 
                 # Execute
                 self.threadpool.start(self.worker_eval) 
@@ -326,7 +319,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             export_df = pd.concat([result_df, assessment_df])
             export_df = export_df.apply(lambda x: pd.Series(x.dropna().values))
             #export_file_path = filedialog.asksaveasfilename()
-            # TODO
             predefined_name = settings.about.version
             if self.checkbox_csv.isChecked() and self.checkbox_xlsx.isChecked():
                 export_file_path = QFileDialog.getSaveFileName(None, 'Save File as csv and xlsx', 

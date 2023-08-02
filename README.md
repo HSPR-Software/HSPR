@@ -20,7 +20,7 @@ All computations are based on Headlight Safety Performance Rating (HSPR) - Recom
     - To use the git clone command under windows pleas install the latest [git software](https://git-scm.com/downloads)
 - To install the required python packages please run the following command from the main direcotry of the project (conda enviroment needs to be activated)
     ```bash
-    pip install -r requiremnts.txt # file is located in the base folder
+    pip install -r requirements.txt # file is located in the base folder
     ```
 - To run the program you can use the following command:
     ```bash

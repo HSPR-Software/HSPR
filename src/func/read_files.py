@@ -1,5 +1,5 @@
 import numpy as np
-from main import MainWindow 
+# from main import MainWindow 
 
 def read_files(zip, file_path):
     """Encodes the uploaded .ies data within the given .zip folder
@@ -138,8 +138,8 @@ def read_files(zip, file_path):
             error_message = "One data entry might not be a value or is otherwise corrupted. Please check the uploaded files."
         else:
             error_message = e.args[0]
-        MainWindow.show_error_popup(MainWindow, e, error_message)
-        return
+        # MainWindow.show_error_popup(MainWindow, e, error_message)
+        print(e, error_message)
 
     # Covert angles into numpy array
     angle_hori = np.array(angle_hori, dtype=np.float) 

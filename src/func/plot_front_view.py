@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from func.find_nearest import *
+from .find_nearest import *
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 def plot_front_view(fig, axes, data):

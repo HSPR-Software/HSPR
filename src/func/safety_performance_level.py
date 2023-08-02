@@ -1,5 +1,5 @@
 import numpy as np
-from settings.configuration import Performance_Levels
+from ..settings.configuration import Performance_Levels
 
 def safety_performance_level(performance):
     """find the corrsponding perfomance level from the computed score

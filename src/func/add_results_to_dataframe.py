@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from settings.configuration import db_system_endscores, db_system_average
+from ..settings.configuration import db_system_endscores, db_system_average
 
 def add_results_to_dataframe(data):
     """Add and structure computed results to a new dataframe
