@@ -45,8 +45,8 @@ def compute_lb_glare(matrix, installation_width, installation_height, horizontal
     left_meter = horizontal_edges[0] + horizontal_resolution_half
     right_meter = horizontal_edges[1] - horizontal_resolution_half
 
-    matrix_width = np.int(np.around((right_meter-left_meter)/horizontal_resolution)+1)
-    matrix_height = np.int(np.around((upper_meter-lower_meter)/vertical_resolution)+1)
+    matrix_width = int(np.around((right_meter-left_meter)/horizontal_resolution)+1)
+    matrix_height = int(np.around((upper_meter-lower_meter)/vertical_resolution)+1)
     new_matrix = np.zeros((matrix_height, matrix_width))
     
     y = upper_meter
@@ -71,8 +71,8 @@ def compute_lb_glare(matrix, installation_width, installation_height, horizontal
             area = width*height
             steradians = np.divide(area, distance**2)
             
-            weight_row = np.int((row//(matrix_height/Glare_Weights.shape[0]))%(matrix_height/Glare_Weights.shape[0]))
-            weight_column = np.int((column//(matrix_width/Glare_Weights.shape[1]))%(matrix_width/Glare_Weights.shape[1]))
+            weight_row = int((row//(matrix_height/Glare_Weights.shape[0]))%(matrix_height/Glare_Weights.shape[0]))
+            weight_column = int((column//(matrix_width/Glare_Weights.shape[1]))%(matrix_width/Glare_Weights.shape[1]))
             new_matrix[row][column] = I_S * steradians * Glare_Weights[weight_row][weight_column]
 
             # add to x with each step

@@ -4,22 +4,16 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-import os
-import time
-import zipfile
-#import openpyxl
+
 import pandas as pd
-import tkinter as tk
 import traceback, sys
 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import QThreadPool
 from PyQt5.QtWidgets  import QApplication, QVBoxLayout, QMainWindow, QFileDialog, QMessageBox, QHeaderView
 
-from matplotlib import gridspec
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 # from matplotlib.figure import Figure
-from tkinter import filedialog
 
 from settings.about import info, txt
 import settings.about
@@ -29,7 +23,6 @@ from func.read_parameters import *
 from func.add_results_to_dataframe import *
 from func.plot_top_view import *
 from func.plot_front_view import *
-from settings.configuration import db_system_endscores 
 from func.get_open_files_and_dirs import *
 from classes.WorkerSignals import *
 from classes.LoadingCircle import *
@@ -40,6 +33,7 @@ from ui.main_gui import Ui_MainWindow
 from ui.IES_upload_gui import *
 from ui.adb_zonecheck_gui import*
 from func.adb_blockout_zone_check import adb_blockout_zone_check
+from ui.computation_progressBar import ProgressWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -50,7 +44,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # threadpool for multithreading
         self.threadpool = QThreadPool() 
         print("\n Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
-
+   
         # create loading circle
         self.loading_circle = LoadingCircle()
         self.loading_screen.setMovie(self.loading_circle.movie)
@@ -86,12 +80,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.howto_action.triggered.connect(lambda: self.usage_information())
         self.about_action.triggered.connect(lambda: self.about_information())
 
-        # connect checkbox
-        self.checkbox_manually.stateChanged.connect(self.checkbox_changed)
-        self.checkbox_automatic.stateChanged.connect(self.checkbox_changed)
-        self.checkbox_adb.stateChanged.connect(self.checkbox_changed)
-        self.checkbox_xlsx.stateChanged.connect(self.checkbox_changed)
-        self.checkbox_csv.stateChanged.connect(self.checkbox_changed) 
+        #connect checkboxen
+        self.checkbox_adb.stateChanged.connect(self.update_computebutton_status)
+        self.checkbox_automatic.stateChanged.connect(self.update_computebutton_status)
+        self.checkbox_automatic.stateChanged.connect(lambda: self.checkbox_manually.setChecked(False) if self.checkbox_automatic.isChecked() else False)
+        self.checkbox_manually.stateChanged.connect(self.update_computebutton_status)
+        self.checkbox_manually.stateChanged.connect(lambda: self.checkbox_automatic.setChecked(False) if self.checkbox_manually.isChecked() else False)
+        self.checkbox_csv.stateChanged.connect(self.update_exportbutton_status)
+        self.checkbox_xlsx.stateChanged.connect(self.update_exportbutton_status)
+
+        self.width_lb.setValue(1.5)
+        self.height_lb.setValue(.75)
+        self.width_hb.setValue(1.5)
+        self.height_hb.setValue(.75)
+        self.width_adb.setValue(1.5)
+        self.height_adb.setValue(.75)
 
         self.layout_dict = {
             'LB': [self.low_beam],
@@ -206,7 +209,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             except Exception as e:
                 pass
-    
+        self.update_computationmode_checkbox_status()
+
     def clear_uploadeddata(self):
         global data
         if len(data) > 0: self.statusbar.showMessage("Data has been cleared",2000)
@@ -215,6 +219,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.lb_upload_window.restoreinitialButton()
         self.hb_upload_window.restoreinitialButton()
         self.adb_upload_window.restoreinitialButton()
+        self.update_computationmode_checkbox_status()
+        self.update_exportbutton_status()
 
 
     def getdatafromUI(self,type,ui):
@@ -227,10 +233,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 data[type] = read_files(None,ui.datapaths)
                 if type == "ADB": data[type][3] = ["Linie1_LH", "Linie1_RH", "Linie2_LH", "Linie2_RH","Linie3_LH", "Linie3_RH","Linie4_LH", "Linie4_RH","Linie5_LH", "Linie5_RH","Linie6_LH", "Linie6_RH"] #correction for necessary names in adb:assessment
                 self.statusbar.showMessage(str(type)+" files have been uploaded",3500)
+            self.update_computationmode_checkbox_status()
 
         except Exception as e:
             self.show_error_popup(e, str(e))
             return
+        
 
     def clean_and_plot(self, data):
         print('\n Computation is over. Sending results to graphical user interface.')
@@ -263,6 +271,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # run loading circle gif   
         self.loading_screen.show()     
         self.loading_circle.start_animation()
+        progressWindow = ProgressWindow()
+        progressWindow.progressBar.setMaximum(8)
+        progressWindow.show()
 
         # read given height and width parameters
         width_list = [self.width_lb.text(), self.width_hb.text(), self.width_adb.text()]
@@ -283,10 +294,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if not data:
                     raise TypeError() 
                 # Create Worker and add args
-                self.worker_eval = Worker(evaluate_data)
-                self.worker_eval.args = (data, predifined_height, predifined_width, computation_mode)
+                self.worker_eval = Worker(evaluate_data,data, predifined_height, predifined_width, computation_mode)
+                #self.worker_eval.args = (data, predifined_height, predifined_width, computation_mode,progressWindow)
 
                 # Connect signals
+                self.worker_eval.signals.updateProgressText.connect(lambda text: self.updateTextSlot(text, progressWindow))
+                self.worker_eval.signals.updateProgressBar.connect(lambda value: self.updateProgressSlot(value, progressWindow))
+
                 self.worker_eval.signals.result.connect(self.show_assessment)
                 self.worker_eval.signals.result.connect(self.clean_and_plot)
                 self.worker_eval.signals.result.connect(self.show_table)              
@@ -297,6 +311,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             # stop loading circle
+            progressWindow.close()
             self.loading_circle.stop_animation()
             self.loading_screen.hide()
 
@@ -309,6 +324,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 error_message = e.args[0]
                 self.show_error_popup(e, error_message)
+
+
+    #@pyqtSlot(str)
+    def updateTextSlot(self, text,progressWindow):
+        progressWindow.updatetext(text)
+
+    #@pyqtSlot(str)
+    def updateProgressSlot(self, amount,progressWindow):
+        progressWindow.increasebar_by(amount) 
+
 
     def export_results(self):
         #Merge result dataframes
@@ -352,7 +377,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def show_end_popup(self):
         msg = QMessageBox()
         msg.setWindowTitle("Completed")
-        msg.setText('Computation is over. Results and plots are updated.')      
+        msg.setText('Computation is complete. Results and plots have been updated.')      
         x = msg.exec_()
 
     def show_error_popup(self, error_type, error_message):
@@ -370,7 +395,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def about_information(self):
         msg = QMessageBox()
         msg.setWindowTitle("Software Information")
-        msg.setText(info)            
+        msg.setText(info)     
+        msg.setTextFormat(1)  # Qt.TextFormat = 1 for HTML to display the mail address as a link       
         x = msg.exec_()
 
     def align_table(self, frame):
@@ -392,9 +418,56 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.adb_upload_window.close() 
             self.adb_check_ui.close() 
 
+
+    def update_computationmode_checkbox_status(self):
+        global data
+        keys = data.keys()
+        self.checkbox_adb.setChecked(False)
+        self.checkbox_manually.setChecked(False)
+        self.checkbox_automatic.setChecked(False)
+        self.checkbox_adb.setEnabled(False)
+        self.checkbox_manually.setEnabled(False)
+        self.checkbox_automatic.setEnabled(False)
+
+        if bool("ADB" in keys) & bool("LB" in keys) & bool("HB" in keys): 
+            self.checkbox_adb.setEnabled(True)
+            self.checkbox_adb.setChecked(True)
+
+
+        elif bool("LB" in keys) & bool("HB" in keys): 
+            self.checkbox_manually.setEnabled(True)
+            self.checkbox_automatic.setEnabled(True)
+
+
+
+    def update_computebutton_status(self):
+        #todo Bedingungen unten noch beser anpassen
+        self.computation_mode = [x.text() for x in [self.checkbox_manually, self.checkbox_automatic, self.checkbox_adb] if x.isChecked()]
+        if bool(self.computation_mode): self.compute_button.setEnabled(True)
+        else: self.compute_button.setEnabled(False)
+
+    def switch_manuell_automatic_checkboxstate(self,button):
+        if button.isChecked:
+            self.checkbox_automatic.setChecked(False)
+            self.checkbox_manually.setChecked(False)
+            button.setChecked(True)
+
+
+
+    def update_exportbutton_status(self):
+        if self.checkbox_xlsx.isChecked() or self.checkbox_csv.isChecked():
+            self.export_button.setEnabled(True)
+        else: self.export_button.setEnabled(False)
+
+
+
+
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     MainWindow = MainWindow()
+    #MainWindow.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "taskbar_icon.png")))
     # ui = Ui_MainWindow()
     # ui.setupUi(MainWindow)
     MainWindow.show()

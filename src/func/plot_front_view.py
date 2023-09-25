@@ -16,37 +16,18 @@ def plot_front_view(fig, axes, data):
     """
     
     matrix, horizontal_angle, vertical_angle = data[0], data[1], data[2]
-    cmap = plt.get_cmap('jet')
-    
-    # check defined boundries 
-    y_min, y_max = np.where(vertical_angle==find_nearest(vertical_angle, -15))[0][0], np.where(vertical_angle==find_nearest(vertical_angle, 15))[0][0]
-    x_min, x_max = np.where(horizontal_angle==find_nearest(horizontal_angle, -45))[0][0], np.where(horizontal_angle==find_nearest(horizontal_angle, 45))[0][0]
+    # aspect auto to stretch to the available space
+    # extend limited to +-45° horizontally and +-10° vertically for visibility of the relevant regions
+    #im = axes.imshow(matrix, cmap='jet', interpolation='nearest', origin='lower',extent=[horizontal_angle[0], horizontal_angle[-1], vertical_angle[0], vertical_angle[-1]], aspect='auto')
+    area = [-45, 45, -10, 10]
+    im = axes.imshow(matrix, cmap='jet', interpolation='nearest', origin='lower',extent=area, aspect='auto')
 
-    vertical_angle = vertical_angle[y_min:y_max]
-    horizontal_angle = horizontal_angle[x_min:x_max]
-    matrix = matrix[y_min:y_max,x_min:x_max]
-
-    im = axes.pcolormesh(matrix, cmap=cmap)
-
-    # find max and zero of each axes
-    zero_yaxes = np.where(vertical_angle==find_nearest(vertical_angle, 0))[0][0]
-    zero_xaxes = np.where(horizontal_angle==find_nearest(horizontal_angle, 0))[0][0]
-    max_yaxes = matrix.shape[0]
-    max_xaxes = matrix.shape[1]
-    
-    # add zero lines
-    axes.plot([zero_xaxes, zero_xaxes], [0, max_yaxes], color='dimgray', linewidth=2.5)
-    axes.plot([0, max_xaxes], [zero_yaxes, zero_yaxes], color='dimgray', linewidth=2.5)
+    axes.axvline(x=0, color='dimgray', linewidth=2.5,alpha=0.75)
+    axes.axhline(y=0, color='dimgray', linewidth=2.5,alpha=0.75)
 
     # set labels and ticks for axis
-    axes.set_ylabel('Vertical angle in degrees', loc='center')
-    axes.set_yticks(np.around(np.linspace(0, im.sticky_edges.y[-1], 9)))
-    axes.set_yticklabels(np.around(np.linspace(vertical_angle[0], vertical_angle[-1], 9)))
-
-    axes.set_xlabel('Horizontal angle in degrees', loc='center')
-    axes.set_xticks(np.around(np.linspace(0, im.sticky_edges.x[-1], 9)))
-    axes.set_xticklabels(np.around(np.linspace(horizontal_angle[0], horizontal_angle[-1], 9)))
-
+    axes.set_ylabel('Vertical angle in degree', loc='center')
+    axes.set_xlabel('Horizontal angle in degree', loc='center')
 
     # create an axes on the right side of ax. The width of cax will be 5%
     # of ax and the padding between cax and ax will be fixed at 0.05 inch.
@@ -54,6 +35,7 @@ def plot_front_view(fig, axes, data):
     cax = divider.append_axes("right", size="3%", pad=0.1)
     cbar= plt.colorbar(im, cax=cax, ticks=[0, np.round(np.max(matrix)/2), np.round(np.max(matrix))])
     cbar.ax.set_yticklabels(['0', ''.join([str(np.round(np.max(matrix)/2000, decimals=1)), 'k']), ''.join([str(np.round(np.max(matrix)/1000, decimals=1)), 'k'])])
-    cbar.ax.set_title('I in cd', fontsize=9)
+    cbar.ax.set_title('I in cd', fontname="Times New Roman")
 
-    return fig
+    return axes
+

@@ -1,5 +1,8 @@
+from os import read
 import numpy as np
 from main import MainWindow 
+from scipy.interpolate import interp2d
+
 
 def read_files(zip, file_path):
     """Encodes the uploaded .ies data within the given .zip folder
@@ -15,122 +18,29 @@ def read_files(zip, file_path):
         [list]: [name of the data]
     """    
     # variables
-    data_content = []
-    angle_information = []
     names = []
     #assessment = file_path[0].split("/")[-2]
+    h_angles = []
+    v_angles = []
+    matrix = []
     try :
         for index in range(len(file_path)):
             filename = file_path[index]
             names.append(filename.split("/")[-1].split(".")[0])
             
-            if zip != None:
-                data = zip.open(filename, "r")
-            elif zip == None:
-                data = open(filename)
+            if zip == None:
+                with open(filename,'r', encoding="utf-8") as file:
+                    data = file.read()
+                    filetext = data.replace("\r", " ").replace("\n"," ").replace("  ", " ").strip()
 
-            data_lines = data.readlines()
-            data_content = []
-            for line in data_lines:
-                #Decode from bytes to string
-                if zip != None: line = str(line,'utf-8')
-                
-                data_content.append(" ".join(line.split()))  
-
-            # index1 = [i for i, string in enumerate(data_content) if str(string, 'utf-8') == 'TILT=NONE\r\n']
-            # index2 = [i for i, string in enumerate(data_content) if str(string, 'utf-8') == '1 1 0\r\n']   
-            # index1 = [i for i, string in enumerate(data_content) if str(string, 'utf-8').rstrip() == 'TILT=NONE']
-            # index2 = [i for i, string in enumerate(data_content) if str(string, 'utf-8').rstrip() == '1 1 0'] 
-
+            else:
+                with zip.open(filename,'r') as file:
+                    data = file.read().decode("utf-8")
+                    filetext = data.replace("\r", " ").replace("\n","").replace("  ", " ").strip()
+            h_angles, v_angles, light_intensities = ies_file_read(filetext)
+            matrix.append(light_intensities)
             
-            index1 = [i for i, string in enumerate(data_content) if string.rstrip() == 'TILT=NONE']
-            index2 = [i for i, string in enumerate(data_content) if string.rstrip() == '1 1 0']   
-
-
-            #index2 = [index1[0]+2]
-
-            # get lumen information from data
-            lumen_information = [data_content[index1[0]+1].split(" ")[1] if data_content[index1[0]+1].split(" ")[1].replace(".","").isdigit() else -1]
-            # for i, string in enumerate(data_content):
-            #     # if str(string, 'utf-8') == 'TILT=NONE\r\n':
-            #     if string.rstrip() == 'TILT=NONE':
-            #         i+=1
-            #         break
-            
-            # lumen_information.append(str(data_content[i], 'utf-8').split(" ")[1])
-            # lumen_information = [str(data_content[i], 'utf-8').split(" ")[1] if str(data_content[i], 'utf-8').split(" ")[1].replace(".","").isdigit() else -1]
-
-
-            # get angle_information from data
-            for i in range(index1[0]+1, index2[0]+1):
-                # temp = str(data_content[i], 'utf-8').split("\r\n")[0]
-                temp = data_content[i].rstrip()
-                for char in temp.split(" "):
-                    angle_information.append(float(char) if char.isdigit() else -1)
-            length_angle_vert = angle_information[3] #amount of vertical angular datapoints
-            length_angle_hori = angle_information[4]  #amount of horizontal angular datapoints
-
-            angle_vert = []
-            angle_hori = []
-
-            score_vert = 0
-            score_hori = 0
-
-            # calculate score_vertical
-            for i in range(index2[0]+1, len(data_content)+1): 
-                if score_vert < length_angle_vert: 
-                    # new_vert_angles = str(data_content[i], 'utf-8').rstrip()
-                    # new_vert_angles = str(data_content[i], 'utf-8').split("\r\n")[0].split(" ")
-                    # new_vert_angles.remove("")
-                    new_vert_angles = data_content[i].split(" ") 
-
-                    new_vert_angles= list(filter(("").__ne__, new_vert_angles))
-                    angle_vert.append(new_vert_angles)
-                    score_vert = score_vert + len(new_vert_angles)
-                    start_j = i+1  
-            appended_angle_vert = []
-            for row in angle_vert:
-                for number in row:
-                    #isfloat(number) 
-                    appended_angle_vert.append(number)
-            angle_vert = appended_angle_vert
-            #angle_vert = [number for row in angle_vert for number in row]
-
-            # calculate score_horizontal
-            for j in range(start_j, len(data_content)+1):
-                if score_hori<length_angle_hori:
-                    # new_hori_angles = str(data_content[j], 'utf-8').rstrip()
-                    # new_hori_angles = str(data_content[j], 'utf-8').split("\r\n")[0].split(" ")
-                    # new_hori_angles.remove("")
-                    new_hori_angles = data_content[j].split(" ")
-                    new_hori_angles= list(filter(("").__ne__, new_hori_angles))
-                    angle_hori.append(new_hori_angles)
-                    score_hori = score_hori + len(new_hori_angles)
-                    start_k = j+1
-            angle_hori = [number for row in angle_hori for number in row]
-
-            if index == 0:
-                matrix = np.zeros((len(file_path), int(length_angle_vert), int(length_angle_hori)))    
-
-            # need to be changed maybe (see Matlab)   
-            for i in range(int(length_angle_hori)):
-                score_vert = 0
-                values = []
-                for k in range(start_k, len(data_content)+1):
-                    if score_vert < length_angle_vert:
-                        # vert_values = str(data_content[k], 'utf-8').rstrip()
-                        # vert_values = str(data_content[k], 'utf-8').split("\r\n")[0].split(" ")
-                        # vert_values.remove("")
-                        vert_values = data_content[k].split(" ")
-                        vert_values= list(filter(("").__ne__, vert_values))
-                        values.append(vert_values)
-                        score_vert = score_vert + len(vert_values)
-                        start_k = k+1
-                    else:
-                        temp = [number for row in values for number in row]
-                        temp= list(filter(("").__ne__, temp))
-                        matrix[index,:,i] = temp
-                        break
+        return np.array(matrix), np.array(h_angles), np.array(v_angles), names
     except Exception as e:        
         if 'IndexError' in str(e.__class__):
             error_message = "One of the files contains too many or misses values."
@@ -141,18 +51,54 @@ def read_files(zip, file_path):
         MainWindow.show_error_popup(MainWindow, e, error_message)
         return
 
-    # Covert angles into numpy array
-    angle_hori = np.array(angle_hori, dtype=np.float) 
-    angle_vert = np.array(angle_vert, dtype=np.float)     
 
-    return [matrix, angle_hori, angle_vert, names]
+"""Reads vertical and horizontal angles as well as the values out of an .ies file."""
+def ies_file_read(filetext):
+    #with open(path, "r") as file:
+    #filetext = file.replace("\r", " ").replace("\n"," ").replace("  ", " ").strip()
+    info = []  
 
-def isfloat(num):
-    try:
-        float(num)
-        return True
-    except ValueError:
-        print("Fehlerhafter Eintrag: ",num)
+    idx_tilt = filetext.find('TILT=NONE')
+    if idx_tilt == -1: 
+        #print("TILT not mentioned or not NONE.")  
+        raise Exception("TILT not mentioned in the IES file or not NONE.\nMake sure your IES files contain TILT=NONE in the line before the headlight specifications.")
 
-        return False
+    content = filetext[idx_tilt+10:].split(" ") #puts everything after the header content in a list tilt=none is 9 long so +1=10
+    info = content[:13] #hardcounted the 13 numbers which represent the lights data
+    v_angles_num = int(info[3])
+    h_angles_num = int(info[4])
+    v_angles = [float(number) for number in content[13:13+v_angles_num]]
+    h_angles = [float(number) for number in content[13+v_angles_num:13+v_angles_num+h_angles_num]]
+
+    light_intensities = [float(number) for number in content[13+v_angles_num+h_angles_num:]]
+    light_intensities = np.reshape(light_intensities, (h_angles_num, v_angles_num)).T 
+
+
+    #corrects horizontal and vertical angles that have different step sizes
+    diff = abs(h_angles[1] - h_angles[0])
+    for idx, h in enumerate(h_angles[1:]):
+        diff2 = abs(h - h_angles[idx])
+        if diff2 < diff:
+            diff = diff2
+    h_angles_new = np.arange(h_angles[0], h_angles[-1]+diff, diff)
+
+    diff = abs(v_angles[1] - v_angles[0])
+    for idx, v in enumerate(v_angles[1:]):
+        diff2 = abs(v - v_angles[idx])
+        if diff2 < diff:
+            diff = diff2
+    v_angles_new = np.arange(v_angles[0], v_angles[-1]+diff, diff)
+
+    #now interpolates the matri to fit the new angles
+    interpolator = interp2d(h_angles,v_angles,light_intensities, kind="linear") 
+
+    return h_angles_new, v_angles_new,   interpolator(h_angles_new, v_angles_new)
+
+
+
+    #in ies files the it runs through the vertical angles first which means it is arranged as 
+    # vertical sublists in horizontal angles so horizontal is the row vector and vertical the 
+    # column verctor so thats why it gets transposed to fit the intuitive allignment 
+
+   # return h_angles, v_angles, light_intensities
 

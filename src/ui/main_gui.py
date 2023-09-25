@@ -1,10 +1,11 @@
+import os
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        self.setWindowIcon(QtGui.QIcon("src\\taskbar_icon.png"))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "../taskbar_icon.png")))
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1097, 891)
         MainWindow.setStyleSheet("#QWidget#centralwidget {background-color:qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0.011, stop:0 rgba(0, 116, 183, 255), stop:1 rgba(255, 255, 255, 255))}")
@@ -111,36 +112,22 @@ class Ui_MainWindow(object):
         self.label_hb.setFont(font)
         self.label_hb.setObjectName("label_hb")
         self.gridLayout_parameters.addWidget(self.label_hb, 3, 0, 1, 1)
-        self.height_hb = QtWidgets.QLineEdit(self.centralwidget)
+        self.height_hb = QtWidgets.QDoubleSpinBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.height_hb.sizePolicy().hasHeightForWidth())
         self.height_hb.setSizePolicy(sizePolicy)
-        self.height_hb.setStyleSheet("QLineEdit {\n"
-                                     "    border-style: outset;\n"
-                                     "    border-width: 1px;\n"
-                                     "    border-radius: 8px;\n"
-                                     "    min-width: 4em;\n"
-                                     "    padding: 3px;\n"
-                                     "}\n"
-                                     "")
+
         self.height_hb.setObjectName("height_hb")
         self.gridLayout_parameters.addWidget(self.height_hb, 3, 1, 1, 1)
-        self.width_lb = QtWidgets.QLineEdit(self.centralwidget)
+        self.width_lb = QtWidgets.QDoubleSpinBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.width_lb.sizePolicy().hasHeightForWidth())
         self.width_lb.setSizePolicy(sizePolicy)
-        self.width_lb.setStyleSheet("QLineEdit {\n"
-                                    "    border-style: outset;\n"
-                                    "    border-width: 1px;\n"
-                                    "    border-radius: 8px;\n"
-                                    "    min-width: 4em;\n"
-                                    "    padding: 3px;\n"
-                                    "}\n"
-                                    "")
+
         self.width_lb.setObjectName("width_lb")
         self.gridLayout_parameters.addWidget(self.width_lb, 2, 2, 1, 1)
         self.label_lb = QtWidgets.QLabel(self.centralwidget)
@@ -150,37 +137,23 @@ class Ui_MainWindow(object):
         self.label_lb.setFont(font)
         self.label_lb.setObjectName("label_lb")
         self.gridLayout_parameters.addWidget(self.label_lb, 2, 0, 1, 1)
-        self.width_hb = QtWidgets.QLineEdit(self.centralwidget)
+        self.width_hb = QtWidgets.QDoubleSpinBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.width_hb.sizePolicy().hasHeightForWidth())
         self.width_hb.setSizePolicy(sizePolicy)
-        self.width_hb.setStyleSheet("QLineEdit {\n"
-                                    "    border-style: outset;\n"
-                                    "    border-width: 1px;\n"
-                                    "    border-radius: 8px;\n"
-                                    "    min-width: 4em;\n"
-                                    "    padding: 3px;\n"
-                                    "}\n"
-                                    "")
+
         self.width_hb.setObjectName("width_hb")
         self.gridLayout_parameters.addWidget(self.width_hb, 3, 2, 1, 1)
-        self.height_lb = QtWidgets.QLineEdit(self.centralwidget)
+        self.height_lb = QtWidgets.QDoubleSpinBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.height_lb.sizePolicy().hasHeightForWidth())
         self.height_lb.setSizePolicy(sizePolicy)
         self.height_lb.setBaseSize(QtCore.QSize(0, 0))
-        self.height_lb.setStyleSheet("QLineEdit {\n"
-                                     "    border-style: outset;\n"
-                                     "    border-width: 1px;\n"
-                                     "    border-radius: 8px;\n"
-                                     "    min-width: 4em;\n"
-                                     "    padding: 3px;\n"
-                                     "}\n"
-                                     "")
+
         self.height_lb.setObjectName("height_lb")
         self.gridLayout_parameters.addWidget(self.height_lb, 2, 1, 1, 1)
         self.label_adb = QtWidgets.QLabel(self.centralwidget)
@@ -190,37 +163,32 @@ class Ui_MainWindow(object):
         self.label_adb.setFont(font)
         self.label_adb.setObjectName("label_adb")
         self.gridLayout_parameters.addWidget(self.label_adb, 4, 0, 1, 1)
-        self.height_adb = QtWidgets.QLineEdit(self.centralwidget)
+        self.height_adb = QtWidgets.QDoubleSpinBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.height_adb.sizePolicy().hasHeightForWidth())
         self.height_adb.setSizePolicy(sizePolicy)
-        self.height_adb.setStyleSheet("QLineEdit {\n"
-                                      "    border-style: outset;\n"
-                                      "    border-width: 1px;\n"
-                                      "    border-radius: 8px;\n"
-                                      "    min-width: 4em;\n"
-                                      "    padding: 3px;\n"
-                                      "}\n"
-                                      "")
+
         self.height_adb.setObjectName("height_adb")
         self.gridLayout_parameters.addWidget(self.height_adb, 4, 1, 1, 1)
-        self.width_adb = QtWidgets.QLineEdit(self.centralwidget)
+        self.width_adb = QtWidgets.QDoubleSpinBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.width_adb.sizePolicy().hasHeightForWidth())
         self.width_adb.setSizePolicy(sizePolicy)
-        self.width_adb.setStyleSheet("QLineEdit {\n"
-                                     "    border-style: outset;\n"
-                                     "    border-width: 1px;\n"
-                                     "    border-radius: 8px;\n"
-                                     "    min-width: 4em;\n"
-                                     "    padding: 3px;\n"
-                                     "}\n"
-                                     "")
+
         self.width_adb.setObjectName("width_adb")
+
+        self.width_lb.setSingleStep(.05)
+        self.height_lb.setSingleStep(.05)
+        self.width_hb.setSingleStep(.05)
+        self.height_hb.setSingleStep(.05)
+        self.width_adb.setSingleStep(.05)
+        self.height_adb.setSingleStep(.05)
+
+
         self.gridLayout_parameters.addWidget(self.width_adb, 4, 2, 1, 1)
         self.label_height = QtWidgets.QLabel(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
@@ -436,6 +404,15 @@ class Ui_MainWindow(object):
         #self.toolBar.setObjectName("toolBar")
         #MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
 
+        self.compute_button.setEnabled(False)
+        self.checkbox_xlsx.setEnabled(False)
+        self.checkbox_manually.setEnabled(False)
+        self.checkbox_automatic.setEnabled(False)
+        self.export_button.setEnabled(False)
+        self.checkbox_adb.setEnabled(False)
+        self.checkbox_csv.setEnabled(False)
+
+
         self.retranslateUi(MainWindow)
         self.tab_widget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -455,8 +432,8 @@ class Ui_MainWindow(object):
         self.label_hb.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">High Beam </p></body></html>"))
         self.label_lb.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Low Beam </p></body></html>"))
         self.label_adb.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">  ADB         </p></body></html>"))
-        self.label_height.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\">Height </span></p></body></html>"))
-        self.label_width.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\">Width </span></p></body></html>"))
+        self.label_height.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\">Height in m </span></p></body></html>"))
+        self.label_width.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\">Width in m</span></p></body></html>"))
         self.compute_button.setText(_translate("MainWindow", "Compute"))
         self.checkbox_xlsx.setText(_translate("MainWindow", ".xlsx "))
         self.checkbox_manually.setText(_translate("MainWindow", "Manually"))

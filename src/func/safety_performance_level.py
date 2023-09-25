@@ -14,7 +14,7 @@ def safety_performance_level(performance):
     elif performance > 50:
         performance = Performance_Levels[-1]
     else:
-        index = np.int(np.around(performance/10, decimals=1))
+        index = int(np.around(performance/10, decimals=1))
         performance = Performance_Levels[index]
     
     return performance

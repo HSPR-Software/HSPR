@@ -49,8 +49,8 @@ def compute_adb_glare(matrix, installation_width, installation_height, horizonta
         left_meter = horizontal_edges[0] + horizontal_resolution_half
         right_meter = horizontal_edges[1] - horizontal_resolution_half
 
-        matrix_width = np.int(np.around((right_meter-left_meter)/horizontal_resolution)+1)
-        matrix_height = np.int(np.around((upper_meter-lower_meter)/vertical_resolution)+1)
+        matrix_width = int(np.around((right_meter-left_meter)/horizontal_resolution)+1)
+        matrix_height = int(np.around((upper_meter-lower_meter)/vertical_resolution)+1)
         new_matrix = np.zeros((matrix_height, matrix_width))
        
         y = upper_meter
@@ -75,7 +75,7 @@ def compute_adb_glare(matrix, installation_width, installation_height, horizonta
                 area = width*height
                 steradians = np.divide(area, distance**2)
 
-                weight_row = np.int((row//(matrix_height/Glare_Weights.shape[0]))%(matrix_height/Glare_Weights.shape[0]))
+                weight_row = int((row//(matrix_height/Glare_Weights.shape[0]))%(matrix_height/Glare_Weights.shape[0]))
                 new_matrix[row][column] = I_S * steradians * Glare_Weights[:,4][weight_row]
 
                 # add to x with each step
@@ -95,8 +95,8 @@ def compute_adb_glare(matrix, installation_width, installation_height, horizonta
             left_meter = horizontal_edges[index] + horizontal_resolution_half
             right_meter = horizontal_edges[index+1] - horizontal_resolution_half
 
-            matrix_width = np.int(np.around((right_meter-left_meter)/horizontal_resolution)+1)
-            matrix_height = np.int(np.around((upper_meter-lower_meter)/vertical_resolution)+1)
+            matrix_width = int(np.around((right_meter-left_meter)/horizontal_resolution)+1)
+            matrix_height = int(np.around((upper_meter-lower_meter)/vertical_resolution)+1)
             new_matrix = np.zeros((matrix_height, matrix_width))
         
             y = upper_meter
@@ -121,7 +121,7 @@ def compute_adb_glare(matrix, installation_width, installation_height, horizonta
                     area = width*height
                     steradians = np.divide(area, distance**2)
 
-                    weight_row = np.int((row//(matrix_height/Glare_Weights.shape[0]))%(matrix_height/Glare_Weights.shape[0]))
+                    weight_row = int((row//(matrix_height/Glare_Weights.shape[0]))%(matrix_height/Glare_Weights.shape[0]))
                     new_matrix[row][column] = I_S * steradians * (Glare_Weights[:,4][weight_row] * (1850/2500)**index)
 
                     # add to x with each step

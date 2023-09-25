@@ -1,0 +1,5 @@
+*.pyc
+*.ies
+*.zip
+dist/
+build/

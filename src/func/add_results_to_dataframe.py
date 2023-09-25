@@ -27,7 +27,7 @@ def add_results_to_dataframe(data):
                 if '100' in key or '200' in key:
                     del data[key][4][0][3], data[key][4][1][3]
                     del data[key][4][0][-2], data[key][4][1][-2]
-                midpoint= np.int(len(data[key][4][0])/2)
+                midpoint= int(len(data[key][4][0])/2)
 
                 lower_actual.append(data[key][4][0][:midpoint])
                 lower_points.append(data[key][4][1][:midpoint])

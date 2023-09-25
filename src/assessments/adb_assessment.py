@@ -30,7 +30,7 @@ two_point = {'50':[228.2, 182.0, 86.3, 2829.9, 57.0, 181.4, 117.5, 2748.6],
             '100':[209.9, 182.9, 86.9, 2962.7, 82.7, 184.0, 150.0, 2898.7],
             '200':[176.0, 183.2, 131.1, 3038.5, 113.2, 183.3, 177.4, 2979.9]}
 
-def adb_assessment(data, line_names, predifined_height, predifined_width):
+def adb_assessment(data, line_names, predifined_height, predifined_width, signals):
     """Evaluate the performance of the ADB headlight system in a vehicle
 
     Args:
@@ -105,6 +105,7 @@ def adb_assessment(data, line_names, predifined_height, predifined_width):
         'Zone B: ', actual_B_oncoming, ', weight: ', point_B_oncoming, '\n',
         'Zone C: ', actual_C_oncoming, ', weight: ', point_C_oncoming, '\n',
         'Flux: ', actual_Flux_oncoming, ', weight: ', point_Flux_oncoming) 
+        signals.updateProgressBar.emit(1)
         
 
         print('-------{}-----------'.format(lines[assessment_mode][-1]))
@@ -170,5 +171,6 @@ def adb_assessment(data, line_names, predifined_height, predifined_width):
         'Zone B: ', actual_B_preceding, ', weight: ', point_B_preceding, '\n',
         'Zone C: ', actual_C_preceding, ', weight: ', point_C_preceding, '\n',
         'Flux: ', actual_Flux_preceding, ', weight: ', point_Flux_preceding) 
+        signals.updateProgressBar.emit(1)
 
     return result_dict
