@@ -6,7 +6,7 @@ All computations are based on [Headlight Safety Performance Rating (HSPR) - Reco
 For further instructions of how to use the software, see [Software Manual](https://www.gtb-lighting.org/wp-content/uploads/2023/02/HSPR-Software-Manual_V2.1.pdf).
 
 ## Starting the program
-The easiest way to use the HSPR software is via this [download link](https://hessenbox.tu-darmstadt.de/getlink/fiXiFWZ3WCW7WotyFpnSTYPG/HSPR_V2.1.1.exe) or the Downloadlink file
+The easiest way to use the HSPR software is via this [download link](https://hessenbox.tu-darmstadt.de/dl/fiXiFWZ3WCW7WotyFpnSTYPG/HSPR_V2.1.1.exe) or the Downloadlink file
 located in this repository. This leads to an already provided executable program for Windows operating systems.
 Alternatively and for other operating systems than Windows please follow the further installation instructions. 
 
