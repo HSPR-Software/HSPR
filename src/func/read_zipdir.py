@@ -1,8 +1,6 @@
 import copy
 import zipfile
-import matplotlib.pyplot as plt
 
-from main import MainWindow 
 from func.read_files import *
 from func.evaluate_data import *
 
@@ -22,12 +20,14 @@ def read_zipdir(directory):
         [dic]: [description]
     """
     uploaded_data = {}
+    current_file =""
     try:
         with zipfile.ZipFile(directory[0]) as z:
             files = {"LB":[], "HB":[], "ADB":[]}
             filenames = list(filter(lambda x:x.endswith('.ies'), z.namelist()))
 
             for file in filenames:
+                current_file = file
                 if file.split("/")[0] == "LB": files["LB"].append(file)
                 if file.split("/")[0] == "HB": files["HB"].append(file)
                 if file.split("/")[0] == "ADB": files["ADB"].append(file)
@@ -39,11 +39,5 @@ def read_zipdir(directory):
             #if len(uploaded_data["ADB"]) == 0: del uploaded_data["ADB"]
             return uploaded_data
             
-    except Exception as e:        
-        plt.close('all')
-        if 'IndexError' in str(e.__class__):
-            error_message = "Folder is not complete. Either LB or HB folder or a file within the folders is missing."
-        else:
-            error_message = e.args[0]
-        MainWindow.show_error_popup(MainWindow, e, error_message)
-    
+    except Exception as e: 
+        raise  type(e)(f"\nOccured in file {current_file}: \n{e}")

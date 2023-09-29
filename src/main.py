@@ -24,7 +24,6 @@ from func.add_results_to_dataframe import *
 from func.plot_top_view import *
 from func.plot_front_view import *
 from func.get_open_files_and_dirs import *
-from classes.WorkerSignals import *
 from classes.LoadingCircle import *
 from classes.Worker import *
 from classes.Canvas import *
@@ -200,6 +199,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 #folder_name = get_open_files_and_dirs(None, "Open file", cwd)
                 folder_name = QFileDialog.getOpenFileName(None, 'Open zip achive', 
                                 None,"zip-archive (*.zip)")
+                if folder_name == ('', ''): return
                 self.label_upload.setText(str(folder_name[0]))
                 print('\n Following folder has been uploaded: {}'.format(folder_name[0]))
                 data = read_zipdir(folder_name)
@@ -208,7 +208,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.adb_upload_window.restoreinitialButton()
 
             except Exception as e:
-                pass
+                self.show_error_popup(e, str(e))
+                return
         self.update_computationmode_checkbox_status()
 
     def clear_uploadeddata(self):
@@ -273,7 +274,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.loading_circle.start_animation()
         progressWindow = ProgressWindow()
         progressWindow.progressBar.setMaximum(8)
-        progressWindow.show()
 
         # read given height and width parameters
         width_list = [self.width_lb.text(), self.width_hb.text(), self.width_adb.text()]
@@ -292,9 +292,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # Uncomment for debugging
                 # A, B = evaluate_data(data, predifined_height, predifined_width, computation_mode)
                 if not data:
-                    raise TypeError() 
+                    raise TypeError("The variable data does not contain any data. Please upload a folder before computing.") 
                 # Create Worker and add args
-                self.worker_eval = Worker(evaluate_data,data, predifined_height, predifined_width, computation_mode)
+                #self.worker_eval = Worker(evaluate_data,data, predifined_height, predifined_width, computation_mode)
+                self.worker_eval = Worker(evaluate_data,data, predifined_height, predifined_width, computation_mode,)
                 #self.worker_eval.args = (data, predifined_height, predifined_width, computation_mode,progressWindow)
 
                 # Connect signals
@@ -304,7 +305,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.worker_eval.signals.result.connect(self.show_assessment)
                 self.worker_eval.signals.result.connect(self.clean_and_plot)
                 self.worker_eval.signals.result.connect(self.show_table)              
-                
+                self.worker_eval.signals.error.connect(lambda value: self.closeprogressbar(progressWindow))  
+                self.worker_eval.signals.error.connect(lambda value: self.show_error_popup(value[0], str(value[1])))
+
+
+
+                progressWindow.show()
                 # Execute
                 self.threadpool.start(self.worker_eval) 
 
@@ -325,6 +331,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 error_message = e.args[0]
                 self.show_error_popup(e, error_message)
 
+    def closeprogressbar(self,progressWindow):
+        progressWindow.close()
 
     #@pyqtSlot(str)
     def updateTextSlot(self, text,progressWindow):
@@ -383,7 +391,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def show_error_popup(self, error_type, error_message):
         msg = QMessageBox()
         msg.setWindowTitle("Error message")
-        msg.setText(''.join([str(error_type.__class__), ' ', error_message]))      
+        msg.setText(''.join(["The following error occurred:\n\n",str(error_type.__class__), ' ', error_message]))      
         x = msg.exec_()
 
     def usage_information(self):

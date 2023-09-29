@@ -36,7 +36,9 @@ class ProgressWindow(QWidget):
     def updatetext(self, text):
         self.label2.setText(self.label2.text() + '\n' + text)
         
-
+    def closeself(self):
+        self.close()
+        
 
 #if __name__ == "__main__":
 #    app = QApplication(sys.argv)

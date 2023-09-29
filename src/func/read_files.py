@@ -3,102 +3,97 @@ import numpy as np
 from main import MainWindow 
 from scipy.interpolate import interp2d
 
+import re
+import numpy as np
+
+def read_ies_file(filetext):
+    # Initialize variables
+    metadata = {}
+    vertical_angles = []
+    horizontal_angles = []
+    candela_values = []
+    
+    # Split the file into lines
+    lines = filetext.split("\n")
+    
+    # Process each line
+    tilt_none_index = -1
+    for i, line in enumerate(lines):
+        line = line.strip()
+        if line.startswith("["):
+            # This is a keyword line
+            keyword, value = line[1:].split("]", 1)
+            metadata[keyword.strip()] = value.strip()
+        elif line == "TILT=NONE":
+            # This marks the end of the header and the beginning of the data
+            tilt_none_index = i
+            break
+        elif line == "TILT=INCLUDE": 
+            raise Exception("The HSPR Software currently does not support TILT=INCLUDE please make sure light distribution is designed for TILT=NONE.")
+    
+
+    # Check and process the line containing 10 values
+    next_line = re.split(r'[,\s\r\n]+', lines[tilt_none_index + 1].strip())
+    if len(next_line) != 10:
+        raise Exception("The line following TILT=NONE must contain exactly 10 numerical values with the photometric specifications.")
+
+    # Convert and assign the 10 photometric specifications
+    conversion_funcs = [int, float, float, int, int, int, int, float, float, float]
+
+    num_lamps, lumens_per_lamp, candela_multiplier, num_vert_angles, num_horiz_angles, photometric_type, units_type, width, length, height = [func(val) for func, val in zip(conversion_funcs, next_line)]
+
+    # Check and process the line containing 3 values
+    next_line = re.split(r'[,\s\r\n]+', lines[tilt_none_index + 2].strip())
+    if len(next_line) != 3:
+        raise Exception("The line following the 10-value line must contain exactly 3 numerical values.")
+
+    # Convert and assign the next three values: ballast factor, file generation type, input watts
+    ballast_factor, file_generation_type, input_watts = map(float, next_line)
+
+    remaining_data = "".join(lines[tilt_none_index + 3:])
+    new_iterator = iter(re.split(r'[,\s\r\n]+', remaining_data.strip()))
+
+    vertical_angles = np.array([float(next(new_iterator)) for _ in range(num_vert_angles)])
+    horizontal_angles = np.array([float(next(new_iterator)) for _ in range(num_horiz_angles)])
+    candela_values = np.array([float(next(new_iterator)) for _ in range(num_vert_angles * num_horiz_angles)])
+
+    if num_vert_angles*num_horiz_angles != len(candela_values):
+        raise ValueError(f"There is an error in the ies file. Please check if the file contains the prescribed quantity of photometric values and keywords.") 
+
+    candela_values = candela_values.reshape((num_horiz_angles, num_vert_angles)).T 
+
+    min_diff = np.min(np.abs(np.diff(horizontal_angles)))
+    horizontal_angles_new = np.arange(horizontal_angles[0], horizontal_angles[-1] + min_diff, min_diff)
+
+    min_diff = np.min(np.abs(np.diff(vertical_angles)))
+    vertical_angles_new = np.arange(vertical_angles[0], vertical_angles[-1] + min_diff, min_diff)
+
+    interpolator = interp2d(horizontal_angles,vertical_angles,candela_values, kind="linear") 
+
+    return metadata, vertical_angles_new, horizontal_angles_new, interpolator(horizontal_angles_new, vertical_angles_new)
+
+
 
 def read_files(zip, file_path):
-    """Encodes the uploaded .ies data within the given .zip folder
-
-    Args:
-        zip ([zipfile]): [the uploaded zipfile]
-        file_path ([list]): [containing the strings with the location of the .ies files]
-
-    Returns:
-        [array]: [holds the light intensity]
-        [array]: [horizontal angles]
-        [array]: [vertical angles]
-        [list]: [name of the data]
-    """    
-    # variables
     names = []
-    #assessment = file_path[0].split("/")[-2]
-    h_angles = []
-    v_angles = []
     matrix = []
-    try :
-        for index in range(len(file_path)):
-            filename = file_path[index]
-            names.append(filename.split("/")[-1].split(".")[0])
-            
-            if zip == None:
-                with open(filename,'r', encoding="utf-8") as file:
-                    data = file.read()
-                    filetext = data.replace("\r", " ").replace("\n"," ").replace("  ", " ").strip()
-
-            else:
-                with zip.open(filename,'r') as file:
-                    data = file.read().decode("utf-8")
-                    filetext = data.replace("\r", " ").replace("\n","").replace("  ", " ").strip()
-            h_angles, v_angles, light_intensities = ies_file_read(filetext)
-            matrix.append(light_intensities)
-            
-        return np.array(matrix), np.array(h_angles), np.array(v_angles), names
-    except Exception as e:        
-        if 'IndexError' in str(e.__class__):
-            error_message = "One of the files contains too many or misses values."
-        elif "ValueError" in str(e.__class__):
-            error_message = "One data entry might not be a value or is otherwise corrupted. Please check the uploaded files."
+    
+    for index in range(len(file_path)):
+        filename = file_path[index]
+        names.append(filename.split("/")[-1].split(".")[0])
+        
+        if zip is None:
+            with open(filename,'r', encoding="utf-8") as file:
+                data = file.read()
         else:
-            error_message = e.args[0]
-        MainWindow.show_error_popup(MainWindow, e, error_message)
-        return
+            with zip.open(filename,'r') as file:
+                data = file.read().decode("utf-8")
+        
+        metadata, vertical_angles, horizontal_angles, candela_values = read_ies_file(data)
+        matrix.append(candela_values)
+        #horizontal_angles.append(horizontal_angles) #angles of the files have to be the same currently caught by interpolating everything to the same angles
+        #vertical_angles.append(vertical_angles)
 
+    return np.array(matrix), horizontal_angles, vertical_angles, names
 
-"""Reads vertical and horizontal angles as well as the values out of an .ies file."""
-def ies_file_read(filetext):
-    #with open(path, "r") as file:
-    #filetext = file.replace("\r", " ").replace("\n"," ").replace("  ", " ").strip()
-    info = []  
-
-    idx_tilt = filetext.find('TILT=NONE')
-    if idx_tilt == -1: 
-        #print("TILT not mentioned or not NONE.")  
-        raise Exception("TILT not mentioned in the IES file or not NONE.\nMake sure your IES files contain TILT=NONE in the line before the headlight specifications.")
-
-    content = filetext[idx_tilt+10:].split(" ") #puts everything after the header content in a list tilt=none is 9 long so +1=10
-    info = content[:13] #hardcounted the 13 numbers which represent the lights data
-    v_angles_num = int(info[3])
-    h_angles_num = int(info[4])
-    v_angles = [float(number) for number in content[13:13+v_angles_num]]
-    h_angles = [float(number) for number in content[13+v_angles_num:13+v_angles_num+h_angles_num]]
-
-    light_intensities = [float(number) for number in content[13+v_angles_num+h_angles_num:]]
-    light_intensities = np.reshape(light_intensities, (h_angles_num, v_angles_num)).T 
-
-
-    #corrects horizontal and vertical angles that have different step sizes
-    diff = abs(h_angles[1] - h_angles[0])
-    for idx, h in enumerate(h_angles[1:]):
-        diff2 = abs(h - h_angles[idx])
-        if diff2 < diff:
-            diff = diff2
-    h_angles_new = np.arange(h_angles[0], h_angles[-1]+diff, diff)
-
-    diff = abs(v_angles[1] - v_angles[0])
-    for idx, v in enumerate(v_angles[1:]):
-        diff2 = abs(v - v_angles[idx])
-        if diff2 < diff:
-            diff = diff2
-    v_angles_new = np.arange(v_angles[0], v_angles[-1]+diff, diff)
-
-    #now interpolates the matri to fit the new angles
-    interpolator = interp2d(h_angles,v_angles,light_intensities, kind="linear") 
-
-    return h_angles_new, v_angles_new,   interpolator(h_angles_new, v_angles_new)
-
-
-
-    #in ies files the it runs through the vertical angles first which means it is arranged as 
-    # vertical sublists in horizontal angles so horizontal is the row vector and vertical the 
-    # column verctor so thats why it gets transposed to fit the intuitive allignment 
-
-   # return h_angles, v_angles, light_intensities
 
