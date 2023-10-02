@@ -1,3 +1,4 @@
+from matplotlib.ticker import FuncFormatter
 import numpy as np
 import matplotlib.pyplot as plt
 from func.find_nearest import *
@@ -33,9 +34,14 @@ def plot_front_view(fig, axes, data):
     # of ax and the padding between cax and ax will be fixed at 0.05 inch.
     divider = make_axes_locatable(axes)
     cax = divider.append_axes("right", size="3%", pad=0.1)
-    cbar= plt.colorbar(im, cax=cax, ticks=[0, np.round(np.max(matrix)/2), np.round(np.max(matrix))])
-    cbar.ax.set_yticklabels(['0', ''.join([str(np.round(np.max(matrix)/2000, decimals=1)), 'k']), ''.join([str(np.round(np.max(matrix)/1000, decimals=1)), 'k'])])
-    cbar.ax.set_title('I in cd', fontname="Times New Roman")
+    cbar= plt.colorbar(im, cax=cax, )
+    #cbar.ax.set_yticklabels(['0', ''.join([str(np.round(np.max(matrix)/2000, decimals=1)), 'k']), ''.join([str(np.round(np.max(matrix)/1000, decimals=1)), 'k'])])
+    cbar.formatter = FuncFormatter(format_func)
+    cbar.update_ticks()
+    cbar.ax.set_title('I in kcd', fontname="Times New Roman")
 
     return axes
+
+def format_func(x, pos):
+    return f"{x / 1000:.0f}"
 
