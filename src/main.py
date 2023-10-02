@@ -231,8 +231,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if (type == "ADB") and (len(ui_data) != 12): raise Exception("It is necessary to uploade all 12 ADB ies files ")
             else:
                 global data
-                data[type] = read_files(None,ui.datapaths)
-                if type == "ADB": data[type][3] = ["Linie1_LH", "Linie1_RH", "Linie2_LH", "Linie2_RH","Linie3_LH", "Linie3_RH","Linie4_LH", "Linie4_RH","Linie5_LH", "Linie5_RH","Linie6_LH", "Linie6_RH"] #correction for necessary names in adb:assessment
+                data[type] = read_files(None,ui.datapaths)                                
+                names = []
+                #correction for assessment variable access
+                if type == "LB": names = ["LB_LH","LB_RH"] 
+                if type == "HB": names = ["HB_LH", "HB_RH"]  #correction for assessment variable access
+                if type == "ADB": names = ["Linie1_LH", "Linie1_RH", "Linie2_LH", "Linie2_RH","Linie3_LH", "Linie3_RH","Linie4_LH", "Linie4_RH","Linie5_LH", "Linie5_RH","Linie6_LH", "Linie6_RH"]
+                for i, new in enumerate(names):
+                        data[type][3][i] = new
+                
                 self.statusbar.showMessage(str(type)+" files have been uploaded",3500)
             self.update_computationmode_checkbox_status()
 
