@@ -62,15 +62,18 @@ def read_ies_file(filetext):
 
     candela_values = candela_values.reshape((num_horiz_angles, num_vert_angles)).T 
 
-    min_diff = np.min(np.abs(np.diff(horizontal_angles)))
-    horizontal_angles_new = np.arange(horizontal_angles[0], horizontal_angles[-1] + min_diff, min_diff)
+    #min_diff = np.min(np.abs(np.diff(horizontal_angles)))
+    #horizontal_angles_new = np.arange(horizontal_angles[0], horizontal_angles[-1] + min_diff, min_diff)
+    horizontal_angles_new = np.arange(-45, 45.05, 0.05)
 
-    min_diff = np.min(np.abs(np.diff(vertical_angles)))
-    vertical_angles_new = np.arange(vertical_angles[0], vertical_angles[-1] + min_diff, min_diff)
+    #min_diff = np.min(np.abs(np.diff(vertical_angles)))
+    #vertical_angles_new = np.arange(vertical_angles[0], vertical_angles[-1] + min_diff, min_diff)
+    vertical_angles_new = np.arange(-15, 15.05, 0.05)
 
-    interpolator = interp2d(horizontal_angles,vertical_angles,candela_values, kind="linear") 
+    interpolator = interp2d(horizontal_angles,vertical_angles,candela_values, kind="linear", fill_value=0) 
+    candela_values  = interpolator(horizontal_angles_new, vertical_angles_new)
 
-    return metadata, vertical_angles_new, horizontal_angles_new, interpolator(horizontal_angles_new, vertical_angles_new)
+    return metadata, vertical_angles_new, horizontal_angles_new, candela_values
 
 
 
