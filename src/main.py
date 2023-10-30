@@ -425,6 +425,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         model = PandasModel(data)
         frame.setModel(model)
         self.align_table(frame)
+        self.checkbox_csv.setEnabled(True)
+        self.checkbox_xlsx.setEnabled(True)
 
     def closeEvent(self, event):
             event.accept()

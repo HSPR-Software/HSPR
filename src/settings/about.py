@@ -13,8 +13,8 @@ txt = '''
 This Application is used to assess the light distribution of various headlight systems. \n
 Please take the following steps to avoid any Errors: \n
 1) Upload the .ies files either in a single .zip folder containing the subfolders ADB, HB, and LB and the .ies files named according to the software manual.
-    Alternatively upload the files separately with the corresponding buttons. The second methode does not require specific file names. It is required that the line "TILT=NONE" of every IES file is followed by 13 numbers representing the lights parameters. \n
-2) Change the inputparameters to your car geometry. \n
+    Alternatively upload the files separately with the corresponding buttons. The second methode does not require specific file names. It is required that the line "TILT=NONE" exists in the file and it is formatted according to IESNA LM-63. \n
+2) Change the inputparameters to your car geometry or use default values. \n
 3) If you don't use an ADB system check manual or automatic. ADB systems are automatically selected. \n
 4) Start the computation by clicking on the Compute button. \n
 5) Wait until the progressbar is full and the results are displayed. \n
